@@ -16,3 +16,28 @@ that *Network* or *PrefixRegistry* would normally be used.
 See the examples and tests directory for usage.
 
 note: Litecoin has irregular extended key prefixes.  See examples/bip39 for details.
+
+
+# Installation
+
+```
+$ cd <yourproject>
+$ composer require dan-da/coinparams-bitwasp-addon
+```
+
+## Run some tests.
+
+```
+$ cd vendor/dan-da/coinparams-bitwasp-addon/tests
+$ ./tester.php
+```
+
+## Run some examples.
+
+```
+$ cd vendor/dan-da/coinparams-bitwasp-addon/examples
+$ php bip39.php
+
+etc, etc.
+```
+
