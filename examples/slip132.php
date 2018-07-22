@@ -4,7 +4,7 @@ use BitWasp\Bitcoin\Address\AddressCreator;
 use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Key\Deterministic\HdPrefix\GlobalPrefixConfig;
 use BitWasp\Bitcoin\Key\Deterministic\HdPrefix\NetworkConfig;
-use BitWasp\Bitcoin\Key\Factory\HierarchicalKeyFactory;
+use BitWasp\Bitcoin\Key\Deterministic\HierarchicalKeyFactory;
 use BitWasp\Bitcoin\Mnemonic\Bip39\Bip39SeedGenerator;
 use BitWasp\Bitcoin\Network\Slip132\BitcoinRegistry;
 use BitWasp\Bitcoin\Key\Deterministic\Slip132\Slip132;
@@ -58,7 +58,7 @@ $seed = $bip39->getSeed("insect issue net wall milk bulb stamp remind tell fee r
 // don't actually need the config until serialize
 // time
 $hdFactory = new HierarchicalKeyFactory($adapter);
-$p2shP2wshP2pkhKey = $hdFactory->fromEntropy($seed, $ypubPrefix->getScriptDataFactory());
+$p2shP2wshP2pkhKey = $hdFactory->fromEntropy($seed, $adapter, $ypubPrefix->getScriptDataFactory());
 $serialized = $serializer->serialize($btc, $p2shP2wshP2pkhKey);
 echo "master key {$serialized}\n";
 

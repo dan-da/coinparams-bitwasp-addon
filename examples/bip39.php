@@ -3,7 +3,7 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use BitWasp\Bitcoin\Crypto\Random\Random;
-use BitWasp\Bitcoin\Key\Factory\HierarchicalKeyFactory;
+use BitWasp\Bitcoin\Key\Deterministic\HierarchicalKeyFactory;
 use BitWasp\Bitcoin\Mnemonic\Bip39\Bip39SeedGenerator;
 use BitWasp\Bitcoin\Mnemonic\MnemonicFactory;
 use BitWasp\Bitcoin\Key\Deterministic\Slip132\Slip132;
@@ -50,7 +50,7 @@ $seed = $seedGenerator->getSeed($mnemonic, 'password');
 echo "\n" . '  Seed: ' . $seed->getHex() . "\n\n";
 
 $hdFactory = new HierarchicalKeyFactory();
-$bip32 = $hdFactory->fromEntropy($seed, $scriptFactory);
+$bip32 = $hdFactory->fromEntropy($seed, Bitcoin::getEcAdapter(), $scriptFactory);
 
 $config = new GlobalPrefixConfig([new NetworkConfig(Bitcoin::getNetwork(), [$prefix]),]);
 $serializer = new Base58ExtendedKeySerializer(new ExtendedKeySerializer(Bitcoin::getEcAdapter(), $config));

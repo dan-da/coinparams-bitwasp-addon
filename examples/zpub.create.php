@@ -7,10 +7,9 @@ use BitWasp\Bitcoin\Bitcoin;
 use BitWasp\Bitcoin\Crypto\Random\Random;
 use BitWasp\Bitcoin\Key\Deterministic\HdPrefix\GlobalPrefixConfig;
 use BitWasp\Bitcoin\Key\Deterministic\HdPrefix\NetworkConfig;
-use BitWasp\Bitcoin\Key\Factory\HierarchicalKeyFactory;
+use BitWasp\Bitcoin\Key\Deterministic\HierarchicalKeyFactory;
 use BitWasp\Bitcoin\Key\Deterministic\Slip132\Slip132;
 use BitWasp\Bitcoin\Key\KeyToScript\KeyToScriptHelper;
-use BitWasp\Bitcoin\Network\Slip132\BitcoinRegistry;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\Base58ExtendedKeySerializer;
 use BitWasp\Bitcoin\Serializer\Key\HierarchicalKey\ExtendedKeySerializer;
 
@@ -44,7 +43,7 @@ $scriptFactory = $prefix->getScriptDataFactory();
 
 $random = new Random();
 $hdFactory = new HierarchicalKeyFactory($adapter);
-$masterKey = $hdFactory->generateMasterKey($random, $scriptFactory);
+$masterKey = $hdFactory->generateMasterKey($adapter, $scriptFactory);
 
 // First nice part, we have access to the SPK/RS/WS
 $scriptAndSignData = $masterKey->getScriptAndSignData();
