@@ -7,7 +7,7 @@
     "license": "Unlicense",
 
     "require": {
-        "bitwasp/bitcoin": "dev-master#8782bc6c470e342d4e0cb67eb036974f133b950b",
+        "bitwasp/bitcoin": "0.0.35.1",
         "dan-da/coinparams": "0.2.6",
         "ext-json": "*",
         "php": ">=5.6"
