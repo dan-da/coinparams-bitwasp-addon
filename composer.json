@@ -1,6 +1,11 @@
 {
     "name": "dan-da/coinparams-bitwasp-addon",
-    "minimum-stability": "dev",
+    "description": "These are addon classes to integrate bitwasp bitcoin-php with coinparams for multicoin functionality.",
+
+    "type": "library",
+    "homepage": "https://github.com/dan-da/coinparams-bitwasp-addon",
+    "license": "Unlicense",
+
     "require": {
         "bitwasp/bitcoin": "dev-master#8782bc6c470e342d4e0cb67eb036974f133b950b",
         "dan-da/coinparams": "0.2.6",
