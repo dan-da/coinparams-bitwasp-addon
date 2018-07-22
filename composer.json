@@ -1,0 +1,20 @@
+{
+    "name": "dan-da/coinparams-bitwasp-addon",
+    "minimum-stability": "dev",
+    "require": {
+        "bitwasp/bitcoin": "dev-master#8782bc6c470e342d4e0cb67eb036974f133b950b",
+        "dan-da/coinparams": "0.2.6",
+        "ext-json": "*",
+        "php": ">=5.6"
+    },
+
+    "require-dev": {
+        "dan-da/tester-php": "1.0.4"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "CoinParams\\BitWasp\\": "src/"
+        }
+    }
+}
