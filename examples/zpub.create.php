@@ -23,17 +23,17 @@ $addrCreator = new AddressCreator();
 
 // We're using litecoin and want the zpub.
 // Grab litecoin registry, use that to make our prefix.
-$btc = new MultiCoinNetwork('LCC');
-Bitcoin::setNetwork($btc);
+$network = new MultiCoinNetwork('LCC');
+Bitcoin::setNetwork($network);
 
 // we set option "undefined_used_btc", which means that Bitcoin extended key
 // prefixes will be used when undefined by slip132
-$bitcoinPrefixes = new MultiCoinRegistry('LCC', 'main', ['undefined_used_btc' => true]);
+$extPrefixes = new MultiCoinRegistry('LCC', 'main', ['undefined_used_btc' => true]);
 
 // If you want to produce different addresses,
 // set a different prefix/factory here.
 $slip132 = new Slip132(new KeyToScriptHelper($adapter));
-$prefix = $slip132->p2wpkh($bitcoinPrefixes);
+$prefix = $slip132->p2wpkh($extPrefixes);
 $scriptFactory = $prefix->getScriptDataFactory();
 
 // To create a key and derive addressses, we don't
@@ -59,7 +59,7 @@ if ($signData->hasWitnessScript()) {
 
 // Drawing on the spk, we can try and make an address
 $address = $masterKey->getAddress($addrCreator);
-echo "address: " . $address->getAddress($btc) . PHP_EOL;
+echo "address: " . $address->getAddress($network) . PHP_EOL;
 
 // Doh - you wanna serialize NOW?
 // Well, the toExtendedKey() method will error because
@@ -74,12 +74,12 @@ try {
 }
 
 $config = new GlobalPrefixConfig([
-    new NetworkConfig($btc, [
+    new NetworkConfig($network, [
         $prefix
     ]),
 ]);
 
 $serializer = new Base58ExtendedKeySerializer(new ExtendedKeySerializer($adapter, $config));
 
-$serialized = $serializer->serialize($btc, $masterKey);
+$serialized = $serializer->serialize($network, $masterKey);
 echo "master key: " . $serialized . PHP_EOL;

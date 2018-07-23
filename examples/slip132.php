@@ -22,33 +22,33 @@ $slip132 = new Slip132(new KeyToScriptHelper($adapter));
 $addrCreator = new AddressCreator();
 
 // We're using Bitcoin Gold (BTG), and need the slip132 bitcoin registry
-$btc = new MultiCoinNetwork('BTG');
+$network = new MultiCoinNetwork('BTG');
 
 // we set option "undefined_used_btc", which means that Bitcoin extended key
 // prefixes will be used when undefined by slip132
-$bitcoinPrefixes = new MultiCoinRegistry('BTG', 'main', ['undefined_used_btc' => true]);
+$extPrefixes = new MultiCoinRegistry('BTG', 'main', ['undefined_used_btc' => true]);
 
 // What prefixes do we want to encode/decode? Configure those here
 // Separate out this one, want it in a sec
-$ypubPrefix = $slip132->p2shP2wpkh($bitcoinPrefixes);
+$ypubPrefix = $slip132->p2shP2wpkh($extPrefixes);
 
 // Keys with ALL of these prefixes will be supported.
 // You can chose a subset if desired (for some networks it's
 // a good idea!)
 $config = new GlobalPrefixConfig([
-    new NetworkConfig($btc, [
-        $slip132->p2pkh($bitcoinPrefixes),
-        // $slip132->p2shP2pkh($bitcoinPrefixes),
+    new NetworkConfig($network, [
+        $slip132->p2pkh($extPrefixes),
+        // $slip132->p2shP2pkh($extPrefixes),
         // ^^ that's why this is so configurable.
         // prefixes can conflict, so you might need
         // two configs for full support ;)
 
         $ypubPrefix,
-        $slip132->p2wpkh($bitcoinPrefixes),
+        $slip132->p2wpkh($extPrefixes),
     ])
 ]);
 
-$btcPrefixConfig = $config->getNetworkConfig($btc);
+$networkPrefixConfig = $config->getNetworkConfig($network);
 $serializer = new Base58ExtendedKeySerializer(new ExtendedKeySerializer($adapter, $config));
 
 $bip39 = new Bip39SeedGenerator();
@@ -59,17 +59,17 @@ $seed = $bip39->getSeed("insect issue net wall milk bulb stamp remind tell fee r
 // time
 $hdFactory = new HierarchicalKeyFactory($adapter);
 $p2shP2wshP2pkhKey = $hdFactory->fromEntropy($seed, $adapter, $ypubPrefix->getScriptDataFactory());
-$serialized = $serializer->serialize($btc, $p2shP2wshP2pkhKey);
+$serialized = $serializer->serialize($network, $p2shP2wshP2pkhKey);
 echo "master key {$serialized}\n";
 
 // This shows how you can parse such a key.
 // Remember the serializer needs the config for this!
-$parsedKey = $serializer->parse($btc, $serialized);
+$parsedKey = $serializer->parse($network, $serialized);
 $accountKey = $parsedKey->derivePath("m/44'/0'/0'"); // Can't really remember the 'purpose' field for this script, assume 44
-$serAccKey = $serializer->serialize($btc, $accountKey);
+$serAccKey = $serializer->serialize($network, $accountKey);
 echo "account key {$serAccKey}\n";
 
 $addrKey = $accountKey->derivePath("0/0");
-$serAddrKey = $serializer->serialize($btc, $addrKey);
+$serAddrKey = $serializer->serialize($network, $addrKey);
 echo "address key {$serAddrKey}\n";
-echo "addr[0] {$addrKey->getAddress($addrCreator)->getAddress($btc)}\n";
+echo "addr[0] {$addrKey->getAddress($addrCreator)->getAddress($network)}\n";

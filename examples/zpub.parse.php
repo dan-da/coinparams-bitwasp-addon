@@ -17,19 +17,19 @@ use CoinParams\BitWasp\MultiCoinRegistry;
 require __DIR__ . "/../vendor/autoload.php";
 
 $adapter = Bitcoin::getEcAdapter();
-$btc = new MultiCoinNetwork('LCC');
+$network = new MultiCoinNetwork('LCC');
 
-Bitcoin::setNetwork($btc);
+Bitcoin::setNetwork($network);
 
 $slip132 = new Slip132(new KeyToScriptHelper($adapter));
 
 // we set option "undefined_used_btc", which means that Bitcoin extended key
 // prefixes will be used when undefined by slip132
-$bitcoinPrefixes = new MultiCoinRegistry('LCC', 'main', ['undefined_used_btc' => true]);
-$zpubPrefix = $slip132->p2wpkh($bitcoinPrefixes);
+$extPrefixes = new MultiCoinRegistry('LCC', 'main', ['undefined_used_btc' => true]);
+$zpubPrefix = $slip132->p2wpkh($extPrefixes);
 
 $config = new GlobalPrefixConfig([
-    new NetworkConfig($btc, [
+    new NetworkConfig($network, [
         $zpubPrefix,
     ])
 ]);
@@ -38,7 +38,7 @@ $serializer = new Base58ExtendedKeySerializer(
     new ExtendedKeySerializer($adapter, $config)
 );
 
-$rootKey = $serializer->parse($btc, "zprvAWgYBBk7JR8GinKQsQP2L5uFDZ4oz7rpRnRhq2WQaKuTkPJeZDWAzXjyWMiFmivaJhr59usUiWoJCYZRDq3KEvj8rXXn5CMrGCrCkdZ6nyg");
+$rootKey = $serializer->parse($network, "zprvAWgYBBk7JR8GinKQsQP2L5uFDZ4oz7rpRnRhq2WQaKuTkPJeZDWAzXjyWMiFmivaJhr59usUiWoJCYZRDq3KEvj8rXXn5CMrGCrCkdZ6nyg");
 
 $account0Key = $rootKey->derivePath("84'/0'/0'");
 $firstKey = $account0Key->derivePath("0/0");
