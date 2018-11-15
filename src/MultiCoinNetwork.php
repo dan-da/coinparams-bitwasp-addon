@@ -22,7 +22,7 @@ class MultiCoinNetwork extends Network {
      * @param string $symbol
      * @param string $network  [main, test, regtest]
      */
-    function __construct($symbol, $network='main') {
+    function __construct(string $symbol, string $network='main') {
 
         // stash these away in case an inherited class needs them.
         $this->symbol = $symbol;
@@ -51,8 +51,7 @@ class MultiCoinNetwork extends Network {
         // Prefer scripthash2 to scripthash. For coins like LTC that
         // changed p2sh prefix after-launch to differentiate from BTC.
         // Overrid this method if you need a different behavior.
-        $scripthash = @$prefixes['scripthash2'] ?
-                       $prefixes['scripthash2'] : $prefixes['scripthash'];
+          $scripthash = isset($prefixes['scripthash2']) ? $prefixes['scripthash2'] : $prefixes['scripthash'];
         
         return [
             self::BASE58_ADDRESS_P2PKH => $this->dh(@$prefixes['public']),
@@ -119,7 +118,7 @@ class MultiCoinNetwork extends Network {
      *  
      *  @return string normalized hex string.
      */
-    private function nh($hex) {
+    private function nh(string $hex) {
         $hex = substr($hex,0,2) == '0x' ? substr($hex, 2) : $hex;
         $pre = strlen($hex) % 2 == 0 ? '' : '0';
         return $pre . $hex;
