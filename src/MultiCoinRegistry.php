@@ -16,7 +16,9 @@ class MultiCoinRegistry extends PrefixRegistry
 
     /**
      * @param string $symbol
-     * @param string $network  [main, test, regtest]
+     * @param string $network [main, test, regtest]
+     * @param null $options
+     * @throws \CoinParams\Exceptions\ArrayKeyNotFound
      */
     public function __construct($symbol, $network='main', $options=null) {
         // stash these away in case an inherited class needs them.
@@ -27,28 +29,25 @@ class MultiCoinRegistry extends PrefixRegistry
         // retrieve data for this blockchain from coinParams json file.
         // see https://github.com/dan-da/coinparams
         $params = CoinParams::get_coin_network($symbol, $network);
-        
-        $extended_map = @$params['prefixes']['extended'];
-        
-        $alt = @$options['alternate'];
-        if($alt) {
-            $extended_map = @$params['prefixes']['extended']['alternates'][$alt];
+
+        $extended_map = Internal::aget($params['prefixes'], 'extended' , 'Extended key prefix map not found.');
+
+        $alt = Internal::aget($options, 'alternate');
+
+        if (!is_null($alt)) {
+            $extended_map = $params['prefixes']['extended']['alternates'][$alt];
         }
-        
-        if(!$extended_map) {
-            throw new \Exception("Extended key prefix map not found.");
-        }        
 
         $map = $this->genMap($extended_map, $options);
 
         parent::__construct($map);
     }
-    
+
     /**
      * Generates a map to be passed to PrefixRegistry::__construct()
      *
      * @param array $extended_map coinParams extended key prefix map
-     * 
+     *
      * extended_map should look like:
      * {
      *    "xpub": {
@@ -74,6 +73,7 @@ class MultiCoinRegistry extends PrefixRegistry
      * }
      *
      * @return array a map to be passed to PrefixRegistry::__construct()
+     * @throws \CoinParams\Exceptions\ArrayKeyNotFound
      */
     protected function genMap($extended_map, $options)
     {
@@ -86,8 +86,8 @@ class MultiCoinRegistry extends PrefixRegistry
         // if requested.
         foreach(['x','X','y','Y','z','Z'] as $k) {
             $kpub = $k == 'X' ? 'xpub' : $k . 'pub';
-            if( !@$em[$kpub]['undefined_used_btc'] || @$options['undefined_used_btc']) {
-                $m[$k] = @$em[$kpub];
+            if( !Internal::aget($em[$kpub], 'undefined_used_btc') || Internal::aget($options , 'undefined_used_btc')) {
+                $m[$k] = $em[$kpub];
             }
             else {
                 $m[$k] = null;
@@ -129,7 +129,7 @@ class MultiCoinRegistry extends PrefixRegistry
     }
     
     private function v($kt) {
-        return @$kt['private'] && $kt['public']; 
+        return Internal::aget($kt , 'private') && $kt['public'];
     }
 
     /**
@@ -138,8 +138,9 @@ class MultiCoinRegistry extends PrefixRegistry
      * @param string $key_type [x,X,y,z,Y,Z]
      *
      * @return array list of prefix bytes for key type.
+     * @throws \CoinParams\Exceptions\ArrayKeyNotFound
      */
     public function prefixBytesByKeyType($key_type) {
-        return @$this->key_type_map[$key_type];
+        return Internal::aget($this->key_type_map, $key_type);
     }
 }
