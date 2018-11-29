@@ -40,51 +40,57 @@ class MultiCoinNetwork extends Network {
         $this->signedMessagePrefix = $this->genSignedMessagePrefix($params);
         $this->p2pMagic            = $this->genP2pMagic($params);
     }
-    
+
     /**
-     * @param array $params  blockchain data from coinParams::get_coin_network()
+     * @param array $params blockchain data from coinParams::get_coin_network()
+     * @return array
+     * @throws \CoinParams\Exceptions\ArrayKeyNotFound
      */
     protected function genBase58PrefixMap($params) {
         
-        $prefixes = @$params['prefixes'];
+        $prefixes = Internal::aget($params, 'prefixes');
         
         // Prefer scripthash2 to scripthash. For coins like LTC that
         // changed p2sh prefix after-launch to differentiate from BTC.
         // Overrid this method if you need a different behavior.
-        $scripthash = @$prefixes['scripthash2'] ?
-                       $prefixes['scripthash2'] : $prefixes['scripthash'];
+        $scripthash = Internal::aget($prefixes, 'scripthash2') ?:  $prefixes['scripthash'];
         
         return [
-            self::BASE58_ADDRESS_P2PKH => $this->dh(@$prefixes['public']),
+            self::BASE58_ADDRESS_P2PKH => $this->dh(Internal::aget($prefixes, 'public')),
             self::BASE58_ADDRESS_P2SH => $this->dh($scripthash),
-            self::BASE58_WIF => $this->dh(@$prefixes['private']),
+            self::BASE58_WIF => $this->dh(Internal::aget($prefixes, 'private')),
         ];
     }
-    
+
     /**
-     * @param array $params  blockchain data from coinParams::get_coin_network()
+     * @param array $params blockchain data from coinParams::get_coin_network()
+     * @return array
+     * @throws \CoinParams\Exceptions\ArrayKeyNotFound
      */
     protected function genBech32PrefixMap($params) {
         $map = [];
-        if( @$params['prefixes']['bech32'] ) {
-            $map[self::BECH32_PREFIX_SEGWIT] = @$params['prefixes']['bech32'];
+        if( Internal::aget($params['prefixes'], 'bech32') ) {
+            $map[self::BECH32_PREFIX_SEGWIT] = $params['prefixes']['bech32'];
         }
         return $map;
     }
-    
+
 
     /**
-     * @param array $params  blockchain data from coinParams::get_coin_network()
+     * @param array $params blockchain data from coinParams::get_coin_network()
+     * @return array
+     * @throws \CoinParams\Exceptions\ArrayKeyNotFound
      */
     protected function genBip32PrefixMap($params) {
         return [
-            self::BIP32_PREFIX_XPUB => $this->nh(@$params['prefixes']['extended']['xpub']['public']),
-            self::BIP32_PREFIX_XPRV => $this->nh(@$params['prefixes']['extended']['xpub']['private']),
+            self::BIP32_PREFIX_XPUB => $this->nh(Internal::aget($params['prefixes']['extended']['xpub'], 'public')),
+            self::BIP32_PREFIX_XPRV => $this->nh(Internal::aget($params['prefixes']['extended']['xpub'], 'private')),
         ];
     }
-    
+
     /**
-     * @param array $params  blockchain data from coinParams::get_coin_network()
+     * @param array $params blockchain data from coinParams::get_coin_network()
+     * @return array
      */
     protected function genBip32ScriptTypeMap($params) {
         return [
@@ -92,19 +98,22 @@ class MultiCoinNetwork extends Network {
             self::BIP32_PREFIX_XPRV => ScriptType::P2PKH,
         ];
     }
-    
+
     /**
-     * @param array $params  blockchain data from coinParams::get_coin_network()
+     * @param array $params blockchain data from coinParams::get_coin_network()
+     * @return mixed
      */
     protected function genSignedMessagePrefix($params) {
         return $params['message_magic'];
     }
-    
+
     /**
-     * @param array $params  blockchain data from coinParams::get_coin_network()
+     * @param array $params blockchain data from coinParams::get_coin_network()
+     * @return string
+     * @throws \CoinParams\Exceptions\ArrayKeyNotFound
      */
     protected function genP2pMagic($params) {
-        return $this->nh(@$params['protocol']['magic']);
+        return $this->nh(Internal::aget($params['protocol'], 'magic'));
     }
     
     /**
@@ -130,7 +139,7 @@ class MultiCoinNetwork extends Network {
      *
      * @param integer $dec
      *
-     * @return normalized hex string
+     * @return string normalized hex string
      */
     private function dh($dec) {
         return $this->nh(dechex($dec));
