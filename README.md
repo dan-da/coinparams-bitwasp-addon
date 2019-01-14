@@ -1,6 +1,6 @@
 # coinparams-bitwasp-addon
 
-These are addon classes to integrate bitwasp [bitcoin-php](https://github.com/Bit-Wasp/bitcoin-php) with [coinparams](https://github.com/Bit-Wasp/bitcoin-php) for
+These are addon classes to integrate bitwasp [bitcoin-php](https://github.com/Bit-Wasp/bitcoin-php) with [coinparams](https://github.com/dan-da/coinparams) for
 multicoin functionality.
 
 This library adds two classes:
