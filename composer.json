@@ -7,7 +7,7 @@
     "license": "Unlicense",
 
     "require": {
-        "bitwasp/bitcoin": "0.0.35.1",
+        "bitwasp/bitcoin": "^1.0.1",
         "dan-da/coinparams": "0.2.6",
         "ext-json": "*",
         "php": ">=5.6"
